@@ -1,4 +1,4 @@
-#!/user/bin/env python
+#!/usr/bin/python
 #coding:utf-8
 
 import os
@@ -15,7 +15,7 @@ for l in info:
     #print "stat:" + stat + " fn:" + fileName
     if (stat != 'M') or (fileName == 'task_checker.h'):
         continue
-    allFile += ''
+    allFile += " "
     allFile += fileName
 
 print "allFile: " + allFile
