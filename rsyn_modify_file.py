@@ -2,9 +2,9 @@ import os
 import sys
 
 sshKey = 'xing@10.17.172.222'
-desRout = {
-    'gonghui': '/data/lsfz_test_s001a/server/gonghui/svr_source/',
-}
+
+def getDesBaseRout(file):
+    return '/data/lsfz_test_s001a/server/' + file + '/svr_source/'
 
 def getCopyFile():
     stat = os.popen('svn stat')
@@ -22,7 +22,7 @@ def getFileDir(file):
     return file.split("\\")[0]
 def doScp(file):
     v = getVersion()
-    des = desRout[v] + getFileDir(file)
+    des = getDesBaseRout(v) + getFileDir(file)
     os.system('scp ./%s %s:%s' %(file, sshKey, des)) 
 
 #---------------------------------------------------
