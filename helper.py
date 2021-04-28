@@ -26,6 +26,7 @@ class Help(object):
                 'dmg':self.doDownloadMongo,
                 'rmg':self.doRestoreMongo,
                 'cmg':self.doCleanMongo,
+                'change':self.doChangeVersion,
                 }
         self._ssh_addr_map = {
                 "3003":'10.20.202.218',
@@ -151,6 +152,24 @@ class Help(object):
         self.goServerDir()
         pid_name = self._server_dir_map[self._server_id] + '/server/gg'
         os.system('gdb attach %s' %(self.getPid(pid_name)))
+
+    def doChangeVersion(self):
+        name = self._args[1]
+        baseRout = '/data/lsfz_test_s001a/server/'
+        name_rout = baseRout + name
+        if os.path.exists(name_rout) == False:
+            print "no exists: " + name 
+            return
+
+        os.chdir(baseRout)
+        os.system('rm -rf svr_source')
+        os.system('rm -rf gg')
+        os.system('rm -rf as')
+
+        os.system('ln -s ./%s/svr_source ./' %name)
+        os.system('ln -s ./%s/svr_source/game/gg ./' %name)
+        os.system('ln -s ./%s/svr_source/activity_server/as ./' %name)
+        print 'change to ' + name + " success!"
 
     def do(self):
         do_func = self._do_map.get(self._op)
