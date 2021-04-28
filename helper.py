@@ -6,7 +6,7 @@ import sys
 import subprocess
 import json
 
-def getPid(na): #-v是屏蔽某字段
+def Pid(na): #-v是屏蔽某字段
     outPut = subprocess.Popen('ps aux | grep %s |grep -v grep' % (na),stdout=subprocess.PIPE,shell=True).communicate()
     l = outPut[0].split()
     if len(l) == 0: return
