@@ -6,6 +6,18 @@ import os
 import psutil
 import sys
 import pyautogui as ai
+import random
+
+def randomFloat(num, half=0):
+    if half == 0:
+        half = num / 2
+    return random.uniform(num - half, num + half)
+
+def randomInt(num, half=0):
+    if half == 0:
+        half = num / 2
+    left = num - half if num - half > 1 else 1
+    return random.randint(int(left), int(num + half))
 
 class MainWindom:
     def __call__(self):
@@ -89,10 +101,12 @@ class PauseProcess(object):
         self._w_process = psutil.Process(win_p.pid)
 
 if __name__ == '__main__':
-    p_p = Process(target=PauseProcess())
-    p_p.start()
-    input()
-    p_p.join()
+    #p_p = Process(target=PauseProcess())
+    #p_p.start()
+    #p_p.join()
+
+
+
     #!/usr/bin/python
 # -*- coding: UTF-8 -*-
  
