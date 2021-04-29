@@ -6,6 +6,7 @@ import time
 pyautogui.FAILSAFE = False
 
 pos = pyautogui.position()
+print(pos)
 pyautogui.screenshot(r"F:\git_code\python\2.png", region=(pos.x, pos.y, 72, 98))
 time.sleep(3)
 im = pyautogui.locateOnScreen(r"F:\git_code\python\2.png");
