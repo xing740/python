@@ -14,20 +14,24 @@ def doMake(fc, fo):
     return os.system('g++ -std=gnu++14 -c %s/%s -o obj/game/%s -I/usr/local/include -I/usr/local/include/mongo -I. -I../common -I../net -I../game_def/ -O0 -g3 -Wreturn-type -Wno-pragmas -gdwarf-2' % (route, fc, fo))
 
 def getCppAndOFileName(na):
-    return na + 'cpp', na + 'o'
+    return na + '.o'
 
 print sys.argv
 
-if len(sys.argv) == 2:
-    fna = sys.argv[1]
-    fcpp, fo = getCppAndOFileName(fna)
-    doMake(fcpp, fo)
-elif len(sys.argv) == 1:
+if len(sys.argv) == 2 or len(sys.argv) == 1: 
     stat = os.popen('svn stat')
     vec = stat.read().split()
+    print vec
+    arg1 = ""
+    if len(sys.argv) == 2:
+        arg1 = sys.argv[1]
     for f in vec:
-        if f.endswith('.cpp'):
-            fcpp, fo = getCppAndOFileName(f.replace('cpp', ''))
+        if arg1 != "" and arg1 != f:
+            continue
+        arg1 = ""
+        if f.endswith('.cpp') or f.endswith('.cpp.h'):
+            fcpp = f
+            fo = getCppAndOFileName(f.replace(".cpp","").replace(".h", ""))
             ret = doMake(fcpp, fo)
             if ret != 0: break
 else:
