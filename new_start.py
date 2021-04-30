@@ -1,13 +1,14 @@
-from multiprocessing import Process
-from pynput.keyboard import Listener
+import json
+import os
+import random
+import sys
 import time
 import tkinter
-import os
+from multiprocessing import Process
 import psutil
-import sys
 import pyautogui as ai
-import random
-import json
+from pynput.keyboard import Listener
+
 
 def randomFloat(num, half=0):
     if half == 0:
@@ -20,6 +21,7 @@ def randomInt(num, half=0):
         half = num / 2
     left = num - half if num - half > 1 else 1
     return random.randint(int(left), int(num + half))
+
 
 def clickImage(args, pos):
     x = args.left
@@ -36,23 +38,24 @@ def clickImage(args, pos):
         y += args.height
     ai.click(x, y)
 
+
 class CfgMgr:
     __own = None
-    
+
     def __init__(self):
         with open('./cfg.json', 'r') as fp:
             cfg = json.load(fp)
         # 移动物体
-        self._from_x = cfg['fromx']
-        self._from_y = cfg['fromy']
-        self._to_x = cfg['tox']
-        self._to_y = cfg['toy']
-        self._interval_x = cfg['intervalx']
-        self._interval_y = cfg['intervaly']
+        self._from_x = cfg['fromX']
+        self._from_y = cfg['fromY']
+        self._to_x = cfg['toX']
+        self._to_y = cfg['toY']
+        self._interval_x = cfg['intervalX']
+        self._interval_y = cfg['intervalY']
         # 连点
         self._click_interval_tm = cfg['clickIntervalTm']
         # 出售
-        self._sell_name = cfg['chushou']
+        self._sell_name = cfg['chuShou']
         self._sell_type = cfg['sellType']
         self._sell_yes = cfg['sellYes']
 
@@ -69,6 +72,27 @@ class CfgMgr:
         if CfgMgr.getOwn() == None:
             CfgMgr.setOwn(CfgMgr())
         return CfgMgr.getOwn()
+
+
+def judgeImageExists(image):
+    i = 0
+    ok = "再找一次"
+    cancel = "中断程序"
+    while ai.locateOnScreen(image) == None:
+        i += 1
+        if i >= 10:
+            res = ai.confirm(text="找了%s次找到%s" % (i, image),
+                             buttons=("%s" % ok, "%s" % cancel))
+            if res == ok:
+                continue
+            else:
+                ai.press("k")
+
+
+def fouceFindImageClick(image, clickPos):
+    judgeImageExists(image)
+    clickImage(ai.locateOnScreen(image), clickPos)
+
 
 class MainWindom:
     def __call__(self):
@@ -88,17 +112,15 @@ class MainWindom:
         b3 = tkinter.Button(self._win, text="连点", command=self.doClick)
         b3.pack(side='left', padx=20)
 
-
-
         self._win.mainloop()
 
     #def click(self):
-        #tk = tkinter.Tk()
-        #tk.wm_attributes('-topmost', 1)
-        #entry = tkinter.Entry(tk, bd=3)
-        #entry.bind('<Return>', lambda event:self.doClick(entry, tk))
-        #entry.pack(side='right')
-        #tk.mainloop()
+    #tk = tkinter.Tk()
+    #tk.wm_attributes('-topmost', 1)
+    #entry = tkinter.Entry(tk, bd=3)
+    #entry.bind('<Return>', lambda event:self.doClick(entry, tk))
+    #entry.pack(side='right')
+    #tk.mainloop()
 
     def doClick(self):
         while True:
@@ -117,17 +139,12 @@ class MainWindom:
                 ai.moveTo(fx + ix * x, fy + iy * y, 0.2)
                 ai.dragTo(tx, ty, 0.2, button='left')
 
-
     def doSell(self):
-        time.sleep(5)
         while True:
-            sell_im = ai.locateOnScreen(CfgMgr.shared()._sell_name)
-            clickImage(sell_im, "centre")
-            type_im = ai.locateOnScreen(CfgMgr.shared()._sell_type)
-            clickImage(type_im, "centre")
-            yes_im = ai.locateOnScreen(CfgMgr.shared()._sell_yes)
-            clickImage(yes_im, "centre")
-            time.sleep(2)
+            fouceFindImageClick(CfgMgr.shared()._sell_name, "centre")
+            fouceFindImageClick(CfgMgr.shared()._sell_type, "centre")
+            fouceFindImageClick(CfgMgr.shared()._sell_yes, "centre")
+
 
 class PauseProcess(object):
     def __init__(self):
@@ -157,22 +174,22 @@ class PauseProcess(object):
         win_p.start()
         self._w_process = psutil.Process(win_p.pid)
 
+
 if __name__ == '__main__':
     p_p = Process(target=PauseProcess())
     p_p.start()
     p_p.join()
 
-
     #!/usr/bin/python
 # -*- coding: UTF-8 -*-
- 
-    #top = tkinter.Tk()
-    #L1 = tkinter.Label(top, text="网站名")
-    #L1.pack(side='left')
-    #E1 = tkinter.Entry(top, bd=5)
-    #E1.get()
-    #E1.bind('<Return>', lambda x:print(E1.get()))
-    #E1.pack(side='right')
 
-    #top.mainloop()
-    #time.sleep(100)
+#top = tkinter.Tk()
+#L1 = tkinter.Label(top, text="网站名")
+#L1.pack(side='left')
+#E1 = tkinter.Entry(top, bd=5)
+#E1.get()
+#E1.bind('<Return>', lambda x:print(E1.get()))
+#E1.pack(side='right')
+
+#top.mainloop()
+#time.sleep(100)
