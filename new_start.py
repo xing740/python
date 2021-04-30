@@ -5,6 +5,7 @@ import sys
 import time
 import tkinter
 from multiprocessing import Process
+import multiprocessing
 import psutil
 import pyautogui as ai
 from pynput.keyboard import Listener
@@ -148,7 +149,7 @@ class MainWindom:
 
 class PauseProcess(object):
     def __init__(self):
-        self._w_process = None
+        self._w_process =None
 
     def __call__(self):
         self.restartWin()
@@ -174,8 +175,8 @@ class PauseProcess(object):
         win_p.start()
         self._w_process = psutil.Process(win_p.pid)
 
-
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
     p_p = Process(target=PauseProcess())
     p_p.start()
     p_p.join()
