@@ -6,5 +6,7 @@
     "intervalx":82,
     "intervaly":101,
     "chushou":"chushou.png",
+    "sellType":"sellType.png",
+    "sellYes":"sellYes.png",
     "clickIntervalTm": 0.5
 }

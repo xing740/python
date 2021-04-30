@@ -51,7 +51,10 @@ class CfgMgr:
         self._interval_y = cfg['intervaly']
         # 连点
         self._click_interval_tm = cfg['clickIntervalTm']
-        self._sell_im_na = cfg['chushou']
+        # 出售
+        self._sell_name = cfg['chushou']
+        self._sell_type = cfg['sellType']
+        self._sell_yes = cfg['sellYes']
 
     @classmethod
     def getOwn(cls):
@@ -116,17 +119,15 @@ class MainWindom:
 
 
     def doSell(self):
-        sell_im = ai.locateOnScreen(CfgMgr.shared()._sell_im_na)
-        clickImage(sell_im, "centre")
-        time.sleep(3)
-        clickImage(sell_im, "leftUp")
-        time.sleep(3)
-        clickImage(sell_im, "leftDown")
-        time.sleep(3)
-        clickImage(sell_im, "rightUp")
-        time.sleep(3)
-        clickImage(sell_im, "rightDown")
-        time.sleep(3)
+        time.sleep(5)
+        while True:
+            sell_im = ai.locateOnScreen(CfgMgr.shared()._sell_name)
+            clickImage(sell_im, "centre")
+            type_im = ai.locateOnScreen(CfgMgr.shared()._sell_type)
+            clickImage(type_im, "centre")
+            yes_im = ai.locateOnScreen(CfgMgr.shared()._sell_yes)
+            clickImage(yes_im, "centre")
+            time.sleep(2)
 
 class PauseProcess(object):
     def __init__(self):
