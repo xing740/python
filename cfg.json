@@ -1,0 +1,10 @@
+{
+    "fromx":35,
+    "fromy":29,
+    "tox":590,
+    "toy":39,
+    "intervalx":82,
+    "intervaly":101,
+    "chushou":"chushou.png",
+    "clickIntervalTm": 0.5
+}
