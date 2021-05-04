@@ -1,12 +1,12 @@
 {
-    "fromX":35,
-    "fromY":29,
+    "fromX":1589,
+    "fromY":556,
     "toX":590,
     "toY":39,
     "intervalX":82,
-    "intervalY":101,
+    "intervalY":82,
     "chuShou":"chuShou.png",
     "sellType":"sellType.png",
     "sellYes":"sellYes.png",
-    "clickIntervalTm": 0.5
+    "clickIntervalTm": 0.01
 }
