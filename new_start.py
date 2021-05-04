@@ -24,6 +24,21 @@ empty_name = "10000.png"
 valMap = {}
 ids = []
 
+def delSame(path, id):
+    image1 = Image.open(path)
+    image1 = make_regalur_image(image1)
+    name1 = str(id) + ".png"
+    for it in ids:
+        if it == name1:
+            continue
+        image2 = valMap.get(it)
+        if image2 == None:
+            continue
+        val = calc_similar(image1, image2)
+        if val >= 0.7:
+            if os.path.exists("%s\%s" %(itemDir, it)):
+                os.remove("%s\%s" %(itemDir, it))
+
 def CalSameVal():
     image1 = Image.open("%s\%s" %(itemDir, tmp_item_name))
     image1 = make_regalur_image(image1)
@@ -77,7 +92,8 @@ def JudgeType():
                 ai.screenshot("%s\%s" %(itemDir, tmp_item_name), region=(posx, posy, ix, iy))
                 item_type = CalSameVal()
                 if item_type == error_id:
-                    continue
+                    item_type = other
+                    print("error id!")
                 if item_type == empty_id:
                     ai.keyUp("shift")
                     return
@@ -97,6 +113,8 @@ def initMap():
     for it in tmp:
         ids.append(it)
         if it == tmp_item_name:
+            continue
+        if os.path.exists("%s\%s" %(itemDir, it)) == False:
             continue
         image2 = Image.open("%s\%s" %(itemDir, it))
         valMap[it] = make_regalur_image(image2)
@@ -245,7 +263,7 @@ class MainWindom:
     def doClick(self):
         while True:
             ai.click()
-            time.sleep(float(CfgMgr.shared()._click_interval_tm))
+            #time.sleep(float(CfgMgr.shared()._click_interval_tm))
 
     def doMove(self):
         initMap()
@@ -266,6 +284,7 @@ class MainWindom:
             #fouceFindImageClick(CfgMgr.shared()._sell_yes, "centre")
 
     def jieTu(self, typeId):
+        initMap()
         typeId *= item_id_interval
         x = 1560
         y = 524
@@ -287,6 +306,9 @@ class MainWindom:
                 image2 = make_regalur_image(image2)
                 if calc_similar(image1, image2) > 0.7:
                     os.remove(newPath)
+                    continue
+                delSame(newPath, typeId)
+
 
 class PauseProcess(object):
     def __init__(self):
