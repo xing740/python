@@ -35,7 +35,7 @@ def delSame(path, id):
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.7:
+        if val >= 0.8:
             if os.path.exists("%s\%s" %(itemDir, it)):
                 os.remove("%s\%s" %(itemDir, it))
 
@@ -51,11 +51,10 @@ def CalSameVal():
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.65:
-            print("val:"+ str(val)+" itemId:"+str(it))
+        if val >= 0.8:
+            print("val:"+str(val)+" itemId:"+str(it))
             return int(it[0]) if it != empty_name else empty_id
     return error_id
-    kk
 def wear():
     changeBack(other)
     ai.click(113,204)
@@ -109,6 +108,8 @@ def JudgeType():
                 ai.mouseUp()
                 ai.keyUp("shift")
 def initMap():
+    valMap.clear()
+    ids.clear()
     tmp = os.listdir(itemDir)
     for it in tmp:
         ids.append(it)
@@ -118,7 +119,7 @@ def initMap():
             continue
         image2 = Image.open("%s\%s" %(itemDir, it))
         valMap[it] = make_regalur_image(image2)
-    print(valMap)
+    #print(valMap)
 
 def randomFloat(num, half=0):
     if half == 0:
@@ -304,7 +305,7 @@ class MainWindom:
 
                 image2 = Image.open(newPath)
                 image2 = make_regalur_image(image2)
-                if calc_similar(image1, image2) > 0.7:
+                if calc_similar(image1, image2) > 0.8:
                     os.remove(newPath)
                     continue
                 delSame(newPath, typeId)
