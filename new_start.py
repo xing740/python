@@ -35,7 +35,7 @@ def delSame(path, id):
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.8:
+        if val >= 0.7:
             if os.path.exists("%s\%s" %(itemDir, it)):
                 os.remove("%s\%s" %(itemDir, it))
 
@@ -51,7 +51,7 @@ def CalSameVal():
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.8:
+        if val >= 0.63:
             print("val:"+str(val)+" itemId:"+str(it))
             return int(it[0]) if it != empty_name else empty_id
     return error_id
@@ -305,7 +305,7 @@ class MainWindom:
 
                 image2 = Image.open(newPath)
                 image2 = make_regalur_image(image2)
-                if calc_similar(image1, image2) > 0.8:
+                if calc_similar(image1, image2) > 0.7:
                     os.remove(newPath)
                     continue
                 delSame(newPath, typeId)
