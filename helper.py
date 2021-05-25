@@ -23,7 +23,7 @@ class Help(object):
                 'sync': self.doSyncFile,
                 'mg':self.doOpenMongo,
                 'ls':self.doServerDirInfo,
-                'dmg':self.doDownloadMongo,
+                'dmg':self.doDumpMongo,
                 'rmg':self.doRestoreMongo,
                 'cmg':self.doCleanMongo,
                 'change':self.doChangeVersion,
@@ -37,7 +37,11 @@ class Help(object):
                 "3008":'10.20.202.218',
                 "20001":'10.21.210.210',
                 "20002":'10.21.210.210',
-                "20003":'10.21.210.210'
+                "20003":'10.21.210.210',
+                "11113":'10.21.210.210',
+                "888":'10.21.210.50',
+                "889":'10.21.210.50',
+                "890":'10.21.210.50',
                 }
         self._server_dir_map = {
                 '55': 'lsfz_test_s001a',
@@ -60,7 +64,10 @@ class Help(object):
                 '003': 'lsfz_world_s003',
                 "20001":'jshp_test_s20001a',
                 "20002":'jshp_test_s20002a',
-                "20003":'jshp_test_s20003a'
+                "20003":'jshp_test_s20003a',
+                "888":'lsfz_test_s888a',
+                "889":'lsfz_test_s889a',
+                "890":'lsfz_test_s890a',
                 }
 
     #-v是屏蔽某字段
@@ -102,18 +109,21 @@ class Help(object):
     def doRestoreMongo(self):
         self.doCleanMongo()
 
-        dir_addr = self._args[2]
+        addr = self._args[2]
         if self.noNeedIndentMongo():
-            os.system('mongorestore -h 10.17.172.222:37017 -d sid%s %s' %(self._server_id, dir_addr))
+            os.system('mongorestore -h 10.17.172.222:37017 -d sid%s %s' %(self._server_id, addr))
         else:
             port, user, passwd, server_id = self.mongoIdentInfo()
-            os.system('mongorestore --port %s -u %s -p %s --authenticationDatabase=admin --authenticationMechanism=MONGODB-CR -d sid%s %s' % (port, user, passwd, server_id, dir_addr))
+            os.system('mongorestore --port %s -u %s -p %s --authenticationDatabase=admin --authenticationMechanism=MONGODB-CR -d sid%s %s' % (port, user, passwd, server_id, addr))
 
-    def doDownloadMongo(self):
+    def doDumpMongo(self):
+        addr = self._args[2]
         if self.noNeedIndentMongo():
-            os.system('mongodump -h 10.17.172.222:37017 -d sid%s -o ./' %(self._server_id))
+            os.system('mongodump -h 10.17.172.222:37017 -d sid%s -o %s' %(self._server_id, addr))
         else:
-            os.system('mongodump --port %s -u %s -p %s --authenticationDatabase=admin --authenticationMechanism=MONGODB-CR -d sid%s -o ./' % (self.mongoIdentInfo()))
+            tmp_tup = (addr,)
+            args = self.mongoIdentInfo() + tmp_tup
+            os.system('mongodump --port %s -u %s -p %s --authenticationDatabase=admin --authenticationMechanism=MONGODB-CR -d sid%s -o %s' % (args))
 
     def mongoIdentInfo(self):
         self.goServerDir()
@@ -156,19 +166,21 @@ class Help(object):
     def doChangeVersion(self):
         name = self._args[1]
         baseRout = '/data/lsfz_test_s001a/server/'
-        name_rout = baseRout + name
+        name_rout = baseRout + "all_server/" + name
         if os.path.exists(name_rout) == False:
             print "no exists: " + name 
             return
 
         os.chdir(baseRout)
         os.system('rm -rf svr_source')
+        os.system('rm -rf instance')
         os.system('rm -rf gg')
         os.system('rm -rf as')
 
-        os.system('ln -s ./%s/svr_source ./' %name)
-        os.system('ln -s ./%s/svr_source/game/gg ./' %name)
-        os.system('ln -s ./%s/svr_source/activity_server/as ./' %name)
+        os.system('ln -s ./all_server/%s/svr_source ./' %name)
+        os.system('ln -s ./all_server/%s/instance ./' %name)
+        os.system('ln -s ./all_server/%s/svr_source/game/gg ./' %name)
+        os.system('ln -s ./all_server/%s/svr_source/activity_server/as ./' %name)
         print 'change to ' + name + " success!"
 
     def do(self):
