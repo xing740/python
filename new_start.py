@@ -51,7 +51,7 @@ def CalSameVal():
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.63:
+        if val >= 0.66:
             print("val:"+str(val)+" itemId:"+str(it))
             return int(it[0]) if it != empty_name else empty_id
     return error_id
@@ -81,10 +81,16 @@ def JudgeType():
     iy = 49
     t = 82
     old_type = 0
+    item_type = other
+
     while True:
+        type_info_arr = [] #[idx,posx,poxy]
         ai.click(1814, 452)
-        time.sleep(1)
+        ticks = time.time()
+        time.sleep(0.5)
         for i in range(5):
+            if item_type == 444:
+                break
             for j in range(4):
                 posx = x + j * t
                 posy = y + i * t
@@ -92,21 +98,45 @@ def JudgeType():
                 item_type = CalSameVal()
                 if item_type == error_id:
                     item_type = other
-                    print("error id!")
+                type_info_arr.append(item_type)
+                type_info_arr.append(posx)
+                type_info_arr.append(posy)
+
                 if item_type == empty_id:
-                    ai.keyUp("shift")
-                    return
-                print("type:"+str(item_type))
-                if item_type != old_type:
-                    changeBack(item_type)
-                    old_type = item_type
-                ai.keyDown("shift")
-                ai.moveTo(posx + ix / 2, posy + iy / 2)
-                ai.mouseDown()
-                ai.mouseUp()
-                ai.mouseDown()
-                ai.mouseUp()
+                    item_type == 444
+                    break
+
+        print("use time: " + str(time.time() - ticks))
+        print(type_info_arr)
+
+        ai.keyDown("shift")
+        i = 0
+        while i < len(type_info_arr):
+            txy = type_info_arr[i]
+            i+=1
+            px = type_info_arr[i]
+            i+=1
+            py = type_info_arr[i]
+            i+=1
+
+            print("type:"+str(txy))
+            if txy == empty_id:
                 ai.keyUp("shift")
+                return
+
+            if txy != old_type:
+                changeBack(txy)
+                old_type = txy
+
+            ai.moveTo(px + ix / 2, py + iy / 2)
+            print("type:"+str(txy))
+            print("x:"+str(px))
+            print("y:"+str(py))
+            ai.mouseDown()
+            ai.mouseUp()
+            ai.mouseDown()
+            ai.mouseUp()
+
 def initMap():
     valMap.clear()
     ids.clear()
