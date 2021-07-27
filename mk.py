@@ -21,12 +21,12 @@ print sys.argv
 if len(sys.argv) == 2 or len(sys.argv) == 1: 
     stat = os.popen('svn stat')
     vec = stat.read().split()
-    print vec
+    #print vec
     arg1 = ""
     if len(sys.argv) == 2:
         arg1 = sys.argv[1]
     for f in vec:
-        if arg1 != "" and arg1 != f:
+        if arg1 != "" and f.find(arg1) < 0:
             continue
         arg1 = ""
         if f.endswith('.cpp') or f.endswith('.cpp.h'):
