@@ -42,6 +42,11 @@ class Help(object):
                 "888":'10.21.210.50',
                 "889":'10.21.210.50',
                 "890":'10.21.210.50',
+                "1":'10.20.202.226',
+                '4003': '10.21.210.235',
+                '4004': '10.21.210.235',
+                '4005': '10.21.210.235',
+                '4006': '10.21.210.235',
                 }
         self._server_dir_map = {
                 '55': 'lsfz_test_s001a',
@@ -68,6 +73,7 @@ class Help(object):
                 "888":'lsfz_test_s888a',
                 "889":'lsfz_test_s889a',
                 "890":'lsfz_test_s890a',
+                "2000":'jjdzc_test_s001a',
                 }
 
     #-v是屏蔽某字段
@@ -91,6 +97,8 @@ class Help(object):
             return False;
 
     def doCleanMongo(self):
+        cur_route = os.getcwd()
+
         self.goServerDir()
         file_addr = os.path.join('.', 'server', 'game_cfg.json')
         with open('%s' % (file_addr), 'r') as fp:
@@ -106,11 +114,16 @@ class Help(object):
         else:
 			sys.stdout.write('clean mongodb fail!\n')
 
+        os.chdir(cur_route)
+
     def doRestoreMongo(self):
         self.doCleanMongo()
 
         addr = self._args[2]
         if self.noNeedIndentMongo():
+            print(addr)
+            os.system('pwd')
+            #os.chdir(
             os.system('mongorestore -h 10.17.172.222:37017 -d sid%s %s' %(self._server_id, addr))
         else:
             port, user, passwd, server_id = self.mongoIdentInfo()
@@ -136,10 +149,13 @@ class Help(object):
 
     def doOpenMongo(self):
         self.goServerDir()
-        file_addr = os.path.join('.', 'server', 'game_cfg.json')
-        with open('%s' % (file_addr), 'r') as fp:
-            data = json.load(fp)
-        os.system('mongo %s' %(data['mongodb']))
+        if self._args[1] == '2000':
+            os.system('mongo "mongodb://127.0.0.1:27017/admin"')
+        else:
+            file_addr = os.path.join('.', 'server', 'game_cfg.json')
+            with open('%s' % (file_addr), 'r') as fp:
+                data = json.load(fp)
+            os.system('mongo %s' %(data['mongodb']))
 
     def doSyncFile(self):
         s = set()
@@ -181,6 +197,9 @@ class Help(object):
         os.system('ln -s ./all_server/%s/instance ./' %name)
         os.system('ln -s ./all_server/%s/svr_source/game/gg ./' %name)
         os.system('ln -s ./all_server/%s/svr_source/activity_server/as ./' %name)
+
+        os.chdir('%ssvr_source' %baseRout)
+        os.system('tag')
         print 'change to ' + name + " success!"
 
     def do(self):
