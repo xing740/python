@@ -8,6 +8,8 @@ import json
 import yaml
 import pymongo
 
+exSvnFiles = ["svr.ts", "main.ts", "proto.json"]
+
 class Help(object):
     def __init__(self, op, sid, args):
         args = sys.argv[1].split(':')
@@ -27,6 +29,7 @@ class Help(object):
                 'rmg':self.doRestoreMongo,
                 'cmg':self.doCleanMongo,
                 'change':self.doChangeVersion,
+                'svn': self.doSvnAll,
                 }
         self._ssh_addr_map = {
                 "3003":'10.20.202.218',
@@ -201,6 +204,30 @@ class Help(object):
         os.chdir('%ssvr_source' %baseRout)
         os.system('tag')
         print 'change to ' + name + " success!"
+
+    def doSvnAll(self):
+        r = os.popen('svn stat')
+        info = r.readlines()
+        okFiles = ""
+        for l in info:
+            add = True
+            file = l.strip('\n').split('      ')
+            if file[0] != 'M':
+                continue
+            for it in exSvnFiles:
+                if file[1].find(it) >= 0:
+                    add = False
+            if(add):
+                okFiles += file[1]
+
+        if len(okFiles) < 2:
+            print("empty!!!")
+            return
+
+        if len(self._args) >= 2:
+            subprocess.Popen('svn commit -m //%s %s' % (self._args[1], okFiles), shell=True)
+        else:
+            subprocess.Popen('svn commit -m //补充提交 %s' % (okFiles), shell=True)
 
     def do(self):
         do_func = self._do_map.get(self._op)
