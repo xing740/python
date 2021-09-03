@@ -81,13 +81,28 @@ def jie_tu(typeId):
     ix = 55
     iy = 49
     t = 82
+    image1 = Image.open("%s\%s" %(itemDir, empty_name))
+    image1 = make_regalur_image(image1)
+        #image2 = Image.open("%s\%s" %(itemDir, it))
+        #image2 = make_regalur_image(image2)
+        image2 = valMap.get(it)
+        if image2 == None:
+            continue
+        val = calc_similar(image1, image2)
+        if val >= 0.65:
     for i in range(5):
         for j in range(4):
             posx = x + j * t
             posy = y + i * t
             while os.path.exists("%s/%s.png" %(itemDir, typeId)):
                 typeId+=1
-            ai.screenshot("%s\%s.png" %(itemDir, typeId), region=(posx, posy, ix, iy))
+            newPath = itemDir + "/" + str(typeId) + ".png"
+            ai.screenshot(newPath, region=(posx, posy, ix, iy))
+
+            image2 = Image.open(newPath)
+            image2 = make_regalur_image(image2)
+            if calc_similar(image1, image2) > 0.7:
+                os.remove(newPath)
 
 def JudgeType():
     x = 1560
@@ -144,8 +159,8 @@ def CalSameVal():
         if image2 == None:
             continue
         val = calc_similar(image1, image2)
-        if val >= 0.6:
-            print("val:"+ str(val))
+        if val >= 0.65:
+            print("val:"+ str(val)+" itemId:"+str(it))
             return int(it[0]) if it != empty_name else empty_id
     return error_id
 
@@ -177,6 +192,16 @@ def fixAll():
     fouceFindImageClick("jie_tu/box.png", "center")
     judgeImageExists("jie_tu/boxOpen.png")
 
+def doSell():
+    time.sleep(3)
+    for i in range(100):
+        ai.click(1282,428)
+        time.sleep(0.1)
+        ai.click(864,513)
+        time.sleep(0.1)
+        ai.click(1149,730)
+        time.sleep(0.1)
+
 if __name__ == '__main__':
     #image1 = Image.open('shi_tu1.png')
     #image1 = make_regalur_image(image1)
@@ -185,13 +210,9 @@ if __name__ == '__main__':
     #print("图片间的相似度为",calc_similar(image1, image2))
     #jie_tu(other)
     #fixAll()
+
     initMap()
     JudgeType()
-    #wear()
-    #changeBack(fu_shou)
-    #time.sleep(0.5)
-    #changeBack(zhuan_bei)
-    #time.sleep(0.5)
-    #changeBack(wu_qi)
-    #time.sleep(0.5)
-    #changeBack(other)
+    wear()
+
+    #doSell()
