@@ -6,8 +6,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 
 #包含所有要修改文件的目录地址(绝对或相对)
-#mainAddr = r"D:\\projects3"
-mainAddr = r"./"
+mainAddr = r"D:\\projects"
+#mainAddr = r".\\"
 
 #正常交易WEEK区间 周一到周五
 tdWStart = 0
@@ -51,7 +51,8 @@ def modifyCTPFrontAddress(path):
 
 			#24小时交易地址
 			else: 
-				text.childNodes[0].data = "tcp://180.168.146.187:10131"
+				text.childNodes[0].data = "tcp://180.168.146.187:10130"
+			print("trade: " + text.childNodes[0].data)
 
 		#判断是否是行情服
 		elif path.find(mKCfgDir) > 0:
@@ -62,6 +63,7 @@ def modifyCTPFrontAddress(path):
 			#24小时交易地址
 			else:
 				text.childNodes[0].data = "tcp://180.168.146.187:10131"
+			print("market: " + text.childNodes[0].data)
 
 	#保存文件
 	with open(path, 'w') as f:
