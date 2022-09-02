@@ -2,55 +2,74 @@
 
 import os
 import xml.dom.minidom
+import xml.etree.ElementTree as ET
 from datetime import datetime
 
-#取当前时间
-dt = datetime.now()
+#包含所有要修改文件的目录地址(绝对或相对)
+#mainAddr = r"D:\\projects3"
+mainAddr = r"./"
 
-tradeDay = [1,2,3,4,5]
+#正常交易WEEK区间 周一到周五
+tdWStart = 0
+tdWEnd = 4
+
+#正常交易HOUR区间
+tdHStart = 8
+tdHEnd = 15
+
+tdCfgDir = "tradeapi\CTP_Trade\\" 
+mKCfgDir = "marketapi\CTP_Market\\" 
 
 def modifyCTPFrontAddress(path):
 	#读取xml文件到内存
-	file_object = open(path)
-	ori_xml = file_object.read()
-	file_object.close()
-	#转换数据编码
-	pro_xml = ori_xml.replace("utf-8", "gb2312")
+	fp = open(path, encoding='gb2312')
+	strData = fp.read()
+	fp.close()
+
 	#将内存中的数据进行xml解析
-	doc = xml.dom.minidom.parseString(pro_xml)
-	#取的树根
+	doc = xml.dom.minidom.parseString(strData)
+
+	#取树根
 	rootNode = doc.documentElement
+
 	#取要更新的结点
 	names = rootNode.getElementsByTagName("FrontAddress")
-	#遍历取到的结点
-	for name in names:
-		#修改交易服的 ctp_trade
-		if path.find("tradeapi\CTP_Trade") >= 0:
-			if dt.hour < 12 and path.find:
-				#正常交易时间
-				name.childNodes[0].data = "tcp://180.168.146.187:10202"
+
+	#遍历取到的结点进行修改
+	for text in names:
+
+		#取当前时间信息
+		curTime = datetime.now()
+		hour = curTime.hour
+		week = curTime.today().weekday()
+
+		#判断是否是交易服
+		if path.find(tdCfgDir) > 0:
+			#正常交易时间地址
+			if tdWStart <= week <= tdWEnd and tdHStart <= hour <= tdHEnd:
+				text.childNodes[0].data = "tcp://180.168.146.187:10202"
+
+			#24小时交易地址
 			else: 
-				#24小时交易
-				name.childNodes[0].data = "tcp://180.168.146.187:10130"
-			print("tradeapi" + " " + path + " " + name.childNodes[0].data)	
-		#修改行情服和行情服的的 ctp_market
-		elif path.find("marketapi\CTP_Market") >= 0:
-			if dt.hour < 12 and path.find:
-				#正常交易时间
-				name.childNodes[0].data = "tcp://180.168.146.187:10211"
+				text.childNodes[0].data = "tcp://180.168.146.187:10131"
+
+		#判断是否是行情服
+		elif path.find(mKCfgDir) > 0:
+			#正常交易时间地址
+			if tdWStart <= week <= tdWEnd and tdHStart <= hour <= tdHEnd:
+				text.childNodes[0].data = "tcp://180.168.146.187:10211"
+
+			#24小时交易地址
 			else:
-				#24小时交易
-				name.childNodes[0].data = "tcp://180.168.146.187:10131"
-			print("markdetapi" + " " + path + " " + name.childNodes[0].data)	
+				text.childNodes[0].data = "tcp://180.168.146.187:10131"
 
 	#保存文件
 	with open(path, 'w') as f:
-		# 缩进 - 换行 - 编码
-		doc.writexml(f, addindent='  ', encoding='gb2312')
+		doc.writexml(f, encoding='gb2312')
 
 
 def getXmlFiles(path):
-	allfile=[]
+	allDir=[]
 	dir = ""
 	# [地址,文件夹名,文件名]
 	for dirpath,dirnames,filenames in os.walk(path):
@@ -59,24 +78,26 @@ def getXmlFiles(path):
 			#组成地址
 			dir = os.path.join(dirpath,dir)
 			if dir.endswith('.xml'):
-				allfile.append(dir)
+				if dir.find(tdCfgDir) > 0 or dir.find(mKCfgDir) > 0:
+					allDir.append(dir)
 		#遍历文件
 		for name in filenames:
 			#组成地址
 			dir = os.path.join(dirpath, name)
 			if dir.endswith('.xml'):
-				allfile.append(dir)
-	return allfile
+				if dir.find(tdCfgDir) > 0 or dir.find(mKCfgDir) > 0:
+					allDir.append(dir)
+	return allDir
 
 
 
 if __name__ == '__main__':
-	#根目录
-	path = "./"
-	#取所以xml文件
-	allfile=getXmlFiles(path)
+	#取所有要修改的xml文件
+	files=getXmlFiles(mainAddr)
+
 	#遍历修改xml文件
-	for file in allfile:
-		#print(file)
-		#修改 ctp 柜台
-		modifyCTPFrontAddress(file)
+	for f in files:
+		print(f)
+		#修改 ctp 前置地址
+		modifyCTPFrontAddress(f)
+
