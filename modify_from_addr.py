@@ -17,7 +17,9 @@ tdWEnd = 4
 tdHStart = 8
 tdHEnd = 15
 
+#交易ctp 配置目录
 tdCfgDir = "tradeapi\CTP_Trade\\" 
+#行情ctp 配置目录
 mKCfgDir = "marketapi\CTP_Market\\" 
 
 def modifyCTPFrontAddress(path):
