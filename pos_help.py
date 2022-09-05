@@ -17,5 +17,3 @@ def do(a1, a2, a3, a4):
 if __name__ == '__main__':
     with Listener(on_click=do) as l:
         l.join()
-
-\\94 36
