@@ -7,7 +7,7 @@ from datetime import datetime
 
 #包含所有要修改文件的目录地址(绝对或相对)
 mainAddr = r"D:\\projects"
-#mainAddr = r".\\"
+#mainAddr = r"./"
 
 #正常交易WEEK区间 周一到周五
 tdWStart = 0
@@ -17,9 +17,7 @@ tdWEnd = 4
 tdHStart = 8
 tdHEnd = 15
 
-#交易ctp 配置目录
 tdCfgDir = "tradeapi\CTP_Trade\\" 
-#行情ctp 配置目录
 mKCfgDir = "marketapi\CTP_Market\\" 
 
 def modifyCTPFrontAddress(path):
@@ -49,12 +47,12 @@ def modifyCTPFrontAddress(path):
 		if path.find(tdCfgDir) > 0:
 			#正常交易时间地址
 			if tdWStart <= week <= tdWEnd and tdHStart <= hour <= tdHEnd:
-				text.childNodes[0].data = "tcp://180.168.146.187:10202"
+				text.childNodes[0].data = "tcp://180.168.146.187:10201"
 
 			#24小时交易地址
 			else: 
 				text.childNodes[0].data = "tcp://180.168.146.187:10130"
-			print("trade: " + text.childNodes[0].data)
+			print(path + " : " + text.childNodes[0].data)
 
 		#判断是否是行情服
 		elif path.find(mKCfgDir) > 0:
@@ -65,7 +63,7 @@ def modifyCTPFrontAddress(path):
 			#24小时交易地址
 			else:
 				text.childNodes[0].data = "tcp://180.168.146.187:10131"
-			print("market: " + text.childNodes[0].data)
+			print(path + " : " + text.childNodes[0].data)
 
 	#保存文件
 	with open(path, 'w') as f:
@@ -101,7 +99,6 @@ if __name__ == '__main__':
 
 	#遍历修改xml文件
 	for f in files:
-		print(f)
 		#修改 ctp 前置地址
 		modifyCTPFrontAddress(f)
 
