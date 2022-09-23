@@ -1,16 +1,24 @@
 import json
+import multiprocessing
 import os
 import random
 import sys
 import time
 import tkinter
+from email.mime import image
+from fileinput import filename
 from multiprocessing import Process
-import multiprocessing
+from tkinter.messagebox import showinfo
+
+import cv2
+import matplotlib.image as mpimg
+import numpy
 import psutil
 import pyautogui as ai
-from pynput.keyboard import Listener
 from PIL import Image
+from pynput.keyboard import Listener
 
+print(os.getcwd())
 item_id_interval = 1000
 wu_qi = 1
 zhuan_bei = 2
@@ -23,6 +31,13 @@ tmp_item_name = "9999.png"
 empty_name = "10000.png"
 valMap = {}
 ids = []
+
+#截地图
+mapImage = "mapImage"
+newMapFile = ""
+
+#帮助信息
+helpInfo = "f1暂停、启动, f2重启"
 
 def delSame(path, id):
     image1 = Image.open(path)
@@ -255,41 +270,42 @@ class MainWindom:
     def __call__(self):
         self._win = tkinter.Tk()
         self._win.wm_attributes('-topmost', 1)
-        self._win.title("助手")
+        self._win.title("ablion")
         # 大小
-        self._win.geometry('350x200+0+0')
+        self._win.geometry('300x150+0+0')
         # 按钮
-        #b1 = tkinter.Button(self._win, text="连点", command=self.click)
-        b1 = tkinter.Button(self._win, text="清空背包", command=self.doMove)
-        b1.pack(side='left', padx=20)
+        b1 = tkinter.Button(self._win, text="帮忙信息", command=lambda:showinfo(message=helpInfo))
+        #b1.pack(side='left', padx=20)
+        b1.grid(row = 0, column=0, pady=5, padx=5)
 
         b2 = tkinter.Button(self._win, text="出售全部", command=self.doSell)
-        b2.pack(side='left', padx=20)
+        b2.grid(row = 0, column=1, pady=5, padx=5)
 
         b3 = tkinter.Button(self._win, text="连点", command=self.doClick)
-        b3.pack(side='left', padx=20)
+        b3.grid(row = 0, column=2, pady=5, padx=5)
         #截图
         b4 = tkinter.Button(self._win, text="截副手", command=lambda:self.jieTu(fu_shou))
-        b4.pack(side='bottom')
+        b4.grid(row = 0, column=3, pady=5, padx=5)
 
         b5 = tkinter.Button(self._win, text="截武器", command=lambda:self.jieTu(wu_qi))
-        b5.pack(side='bottom')
+        b5.grid(row = 1, column=0, pady=5, padx=5)
 
         b6 = tkinter.Button(self._win, text="截装备", command=lambda:self.jieTu(zhuan_bei))
-        b6.pack(side='bottom')
+        b6.grid(row = 1, column=1, pady=5, padx=5)
 
         b7 = tkinter.Button(self._win, text="截其它", command=lambda:self.jieTu(other))
-        b7.pack(side='bottom')
+        b7.grid(row = 1, column=2, pady=5, padx=5)
+
+        b8 = tkinter.Button(self._win, text="清空背包", command=self.doMove)
+        b8.grid(row = 1, column=3, pady=5, padx=5)
+
+        b9 = tkinter.Button(self._win, text="截地图", command=lambda:self.jieMap())
+        b9.grid(row = 2, column=0, pady=5, padx=5)
+
+        b10 = tkinter.Button(self._win, text="打开截地图", command=lambda:self.openJieMap())
+        b10.grid(row = 2, column=1, pady=5, padx=5)
 
         self._win.mainloop()
-
-    #def click(self):
-    #tk = tkinter.Tk()
-    #tk.wm_attributes('-topmost', 1)
-    #entry = tkinter.Entry(tk, bd=3)
-    #entry.bind('<Return>', lambda event:self.doClick(entry, tk))
-    #entry.pack(side='right')
-    #tk.mainloop()
 
     def doClick(self):
         while True:
@@ -313,6 +329,19 @@ class MainWindom:
             #fouceFindImageClick(CfgMgr.shared()._sell_name, "centre")
             #fouceFindImageClick(CfgMgr.shared()._sell_type, "centre")
             #fouceFindImageClick(CfgMgr.shared()._sell_yes, "centre")
+
+    def jieMap(self):
+        print(os.getcwd())
+        global newMapFile
+        newMapFile = time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
+        ai.screenshot(r"%s\%s" %(mapImage, newMapFile), region=(0, 0, 100, 100))
+        #ai.screenshot(r"%s\%s" %("D:\git data\python\mapImage", newMapFile), region=(0, 0, 100, 100))
+
+    def openJieMap(self):
+        if newMapFile == "":
+            self.jieMap()
+        im = Image.open(r"%s\%s" %(mapImage, newMapFile))
+        im.show()
 
     def jieTu(self, typeId):
         initMap()
@@ -354,12 +383,12 @@ class PauseProcess(object):
         all_key = []
         all_key.append(str(key))
         print(all_key)
-        if "'d'" in all_key:
+        if "Key.f1" in all_key:
             if self._w_process.status() == 'stopped':
                 self._w_process.resume()
             else:
                 self._w_process.suspend()
-        elif "'k'" in all_key:
+        elif "Key.f2" in all_key:
             self.restartWin()
 
     def restartWin(self):
@@ -370,6 +399,16 @@ class PauseProcess(object):
         self._w_process = psutil.Process(win_p.pid)
 
 if __name__ == '__main__':
+    ##ai.screenshot(newPath, region=(posx, posy, ix, iy))
+    #time_str_new = time.strftime("%Y%m%d-%H:%M:%S", time.localtime())
+    ##ai.screenshot(newPath, region=(posx, posy, ix, iy))
+    #print(time_str_new)
+
+    #image1 = Image.open(r"D:\\git data\\python\\albion fight\\1.jpg")
+    ##image1.show("safa")
+
+    #image1.show()
+
     multiprocessing.freeze_support()
     p_p = Process(target=PauseProcess())
     p_p.start()
@@ -388,3 +427,4 @@ if __name__ == '__main__':
 
 #top.mainloop()
 #time.sleep(100)
+
